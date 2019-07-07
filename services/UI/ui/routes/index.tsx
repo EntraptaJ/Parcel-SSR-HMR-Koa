@@ -8,7 +8,8 @@ const LoadingDiv = () => <div>Loading</div>
 const HomeRoute = Loadable({
   loader: () => import('ui/routes/Home'),
   loading: LoadingDiv,
-  modules: ['routes/Home/index.tsx']
+  modules: ['routes/Home/index.tsx'],
+  webpack: () => [require('ui/routes/Home')],
 })
 
 export const Routes = () => {

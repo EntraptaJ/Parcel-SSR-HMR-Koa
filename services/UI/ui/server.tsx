@@ -3,14 +3,13 @@ import { Context } from 'koa';
 import React from 'react';
 import { App } from 'ui/App';
 import { ServerLocation } from '@reach/router';
-import { preloadAll, Capture } from 'react-loadable';
+import { Capture } from 'react-loadable';
 import { renderToNodeStream, renderToString } from 'react-dom/server';
 import { readJSON } from 'fs-extra';
 
 export async function uiServer(ctx: Context) {
   ctx.respond = false;
   ctx.status = 200
-  await preloadAll();
   const manifestFile = `${__dirname}/../public/parcel-manifest.json`;
   const cssFile = `${__dirname}/../CSS.json`;
   const [parcelManifest, cssManifest] = await Promise.all([
