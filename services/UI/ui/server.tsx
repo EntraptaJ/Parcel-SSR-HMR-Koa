@@ -9,6 +9,7 @@ import { readJSON } from 'fs-extra';
 
 export async function uiServer(ctx: Context) {
   ctx.respond = false;
+  ctx.status = 200
   await preloadAll();
   const manifestFile = `${__dirname}/../public/parcel-manifest.json`;
   const cssFile = `${__dirname}/../CSS.json`;
@@ -82,6 +83,7 @@ export async function uiServer(ctx: Context) {
         {sources &&
           sources
             .filter(({ type }) => type === 'script')
+            .reverse()
             .map(({ src }, index) => <script async type='text/javascript' charSet='utf-8' key={index} src={src} />)}
       </>,
     )}

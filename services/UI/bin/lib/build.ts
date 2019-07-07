@@ -19,7 +19,8 @@ export async function build(watch: boolean = false) {
     watch,
     target: 'browser',
     contentHash: true,
-    cache: false
+    cache: false,
+    sourceMaps: false
   });
 
   bundler.on('bundled', bundle =>
@@ -33,7 +34,9 @@ export async function build(watch: boolean = false) {
     target: 'node',
     bundleNodeModules: true,
     contentHash: true,
-    cache: false
+    cache: false,
+    sourceMaps: false
+    
   });
 
   serverbundler.on('bundled', bundle =>
