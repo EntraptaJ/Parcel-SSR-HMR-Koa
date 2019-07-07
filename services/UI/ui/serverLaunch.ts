@@ -1,0 +1,1 @@
+export const uiServer = () => import('./server')
