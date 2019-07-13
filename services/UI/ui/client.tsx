@@ -1,7 +1,7 @@
 import React from 'react';
 import { Renderer, hydrate, render as ReactDOMRender } from 'react-dom';
 import { App as AppComponent } from 'ui/App';
-import { preloadReady } from 'react-loadable'
+import { preloadReady } from 'react-loadable';
 
 const render = async (renderFunction: Renderer, App: typeof AppComponent) => {
   renderFunction(<App />, document.getElementById('app'));

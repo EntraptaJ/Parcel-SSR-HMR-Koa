@@ -1,21 +1,20 @@
 // UI/ui/routes/index.tsx
-import React from 'react'
+import React from 'react';
 import Loadable from 'react-loadable';
-import { Router } from '@reach/router'
+import { Router } from '@reach/router';
 
-const LoadingDiv = () => <div>Loading</div>
+const LoadingDiv = () => <div>Loading</div>;
 
 const HomeRoute = Loadable({
   loader: () => import('ui/routes/Home'),
   loading: LoadingDiv,
   modules: ['routes/Home/index.tsx'],
-  webpack: () => [require('ui/routes/Home')],
-})
+});
 
 export const Routes = () => {
   return (
     <Router>
       <HomeRoute path='/' />
     </Router>
-  )
-}
+  );
+};
