@@ -57,4 +57,12 @@ export const AppRoutes: NavItem[] = [
       modules: ['routes/RedirectExample/index.tsx'],
     }),
   },
+  {
+    path: '/TestForm',
+    label: 'Test Form',
+    Loadable: MyLoadable({
+      loader: () => import('ui/routes/TestForm'),
+      modules: ['routes/TestForm/index.tsx'],
+    }),
+  },
 ];

@@ -1,5 +1,4 @@
 // UI/ui/Components/Layout/Nav/index.tsx
-// UI/ui/Components/Layout/Nav/index.tsx
 import React, { FunctionComponent } from 'react';
 import { DrawerProps, Drawer, DrawerContent } from '@rmwc/drawer';
 import { List } from '@rmwc/list';

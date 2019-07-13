@@ -111,9 +111,7 @@ export const uiServer = async (ctx: Context) => {
   );
 
   const htmlEnd = `</div>
-    <script>
-      window.APP_STATE = ${JSON.stringify({ SESSIONPROPS: sessionProps, PROPS: localProps })}
-    </script>
+    <script type="text/javascript">window.APP_STATE = ${JSON.stringify({ SESSIONPROPS: sessionProps, PROPS: localProps })}</script>
     ${renderToString(
       <>
         {' '}

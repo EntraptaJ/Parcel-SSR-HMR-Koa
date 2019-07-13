@@ -1,4 +1,6 @@
 @import '@material/theme/dist/mdc.theme.min.css';
+@import '@rmwc/circular-progress/circular-progress.css';
+@import '@material/typography/dist/mdc.typography.css';
 
 #app,
 .mdc-drawer {
@@ -65,9 +67,10 @@ body,
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-.demo-content {
+.main-content {
+  display: flex;
+  flex: 1 1;
   position: relative;
-  min-height: 100%;
 }
 
 .app__content {
