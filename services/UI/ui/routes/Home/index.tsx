@@ -5,7 +5,7 @@ import { RouteComponentProps } from '@reach/router';
 type HomeRouteType = FunctionComponent<RouteComponentProps>;
 
 const HomeRoute: HomeRouteType = () => {
-  return <h1>Home</h1>;
+  return <p>Home Test</p>;
 };
 
 export default HomeRoute;

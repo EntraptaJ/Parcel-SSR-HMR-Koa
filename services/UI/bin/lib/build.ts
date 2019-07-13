@@ -2,6 +2,7 @@ import { copy, mkdir, remove, writeJSON } from 'fs-extra';
 import ParcelBundler from 'parcel-bundler';
 import run from './run';
 import { entryPointHandler, CSS } from './CSSManifest';
+import { buildManifest } from './buildManifest';
 
 export async function build(watch: boolean = false) {
   await remove('dist');
@@ -12,15 +13,13 @@ export async function build(watch: boolean = false) {
   await copy('package.json', 'dist/package.json');
   await copy('package-lock.json', 'dist/package-lock.json');
 
-  await run('tsc --build server/tsconfig.json');
-
   const bundler = new ParcelBundler('ui/client.tsx', {
     outDir: 'dist/public',
     watch,
     target: 'browser',
     contentHash: true,
-    cache: false,
-    sourceMaps: false
+    sourceMaps: false,
+    cache: false
   });
 
   bundler.on('bundled', bundle =>
@@ -32,10 +31,18 @@ export async function build(watch: boolean = false) {
     outDir: 'dist/server',
     watch,
     target: 'node',
-    bundleNodeModules: true,
     contentHash: true,
-    cache: false,
-    sourceMaps: false
+    sourceMaps: false,
+    bundleNodeModules: true,
+    cache: false
+    
+  });
+
+  const server2bundler = new ParcelBundler(['server/index.ts'], {
+    outDir: 'dist/server',
+    watch,
+    target: 'node',
+    cache: false
     
   });
 
@@ -46,5 +53,8 @@ export async function build(watch: boolean = false) {
 
   await bundler.bundle();
   await serverbundler.bundle();
+  await server2bundler.bundle()
+  const webManifest = await buildManifest()
+  await writeJSON('dist/public/manifest.webmanifest', webManifest)
   await writeJSON('dist/CSS.json', CSS);
 }

@@ -1,33 +1,30 @@
 // UI/UI/server.tsx
 import { Context } from 'koa';
 import React from 'react';
-import { App } from 'ui/App';
 import { ServerLocation } from '@reach/router';
-import { Capture } from 'react-loadable';
+import { Capture, preloadAll } from 'react-loadable';
 import { renderToNodeStream, renderToString } from 'react-dom/server';
 import { readJSON } from 'fs-extra';
+import { App } from 'ui/App';
 
 export async function uiServer(ctx: Context) {
   ctx.respond = false;
-  ctx.status = 200
+  ctx.status = 200;
   const manifestFile = `${__dirname}/../public/parcel-manifest.json`;
-  const cssFile = `${__dirname}/../CSS.json`;
+  const cssFile = `dist/CSS.json`;
   const [parcelManifest, cssManifest] = await Promise.all([
     readJSON(manifestFile) as Promise<{ [key: string]: string }>,
     readJSON(cssFile) as Promise<{ [any: string]: string }>,
   ]);
-
   interface Source {
     src: string;
     type: 'script' | 'style';
   }
 
-  const sources: Source[] = [
-    { type: 'script', src: parcelManifest['client.tsx'] },
-  ];
-
+  const sources: Source[] = [{ type: 'script', src: parcelManifest['client.tsx'] }];
   let modules: string[] = [];
 
+  await preloadAll();
 
   // Prerender to get Modules and shit
   renderToString(
@@ -52,6 +49,8 @@ export async function uiServer(ctx: Context) {
 
   const Head = renderToString(
     <head>
+      <link rel='manifest' href='/manifest.webmanifest' />
+      <meta name='viewport' content='width=device-width, initial-scale=1' />
       {sources && sources.map(({ src, type }, index) => <link rel='preload' href={src} as={type} key={index} />)}
       {sources &&
         sources
@@ -63,9 +62,7 @@ export async function uiServer(ctx: Context) {
   const htmlStart = `
   <!doctype html>
     <html>
-      <head>
-        ${Head}
-      </head>
+      ${Head}
       <body>
       <div id="app">`;
 
