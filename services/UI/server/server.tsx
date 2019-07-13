@@ -55,7 +55,8 @@ export const uiServer = async (ctx: Context) => {
         </Capture>
       </ServerLocation>,
     );
-    localProps = await Props;
+    localProps = await Props || {};
+    sessionProps = [{ path: ctx.path, props: await Props || {} }];
   } catch (e) {
     if (isRedirect(e)) {
       ctx.redirect(e.uri);
@@ -63,7 +64,8 @@ export const uiServer = async (ctx: Context) => {
       return;
     }
 
-    localProps = await Props;
+    localProps = await Props || {};
+    sessionProps = [{ path: ctx.path, props: await Props || {} }];
   }
 
   modules.map(moduleName =>
