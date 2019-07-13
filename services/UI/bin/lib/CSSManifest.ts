@@ -18,7 +18,7 @@ export const entryPointHandler = (bundle: any) => {
  * @param {string} publicURL
  */
 export const feedManifestValue = (bundle: ParcelBundle, manifestValue: any, publicURL: string) => {
-  let output = path.join(publicURL, path.basename(bundle.name));
+  let output = path.join(publicURL, path.basename(bundle.name || ''));
 
   const input = bundle.entryAsset
     ? bundle.entryAsset.relativeName

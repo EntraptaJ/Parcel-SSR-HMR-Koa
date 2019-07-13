@@ -19,7 +19,7 @@ export async function build(watch: boolean = false) {
     target: 'browser',
     contentHash: true,
     sourceMaps: false,
-    cache: false
+    cache: false,
   });
 
   bundler.on('bundled', bundle =>
@@ -27,23 +27,14 @@ export async function build(watch: boolean = false) {
     bundler.options.entryFiles.length > 1 ? bundle.childBundles.forEach(entryPointHandler) : entryPointHandler(bundle),
   );
 
-  const serverbundler = new ParcelBundler(['ui/server.urls'], {
+  process.env['BABEL_ENV'] = 'server'
+  const serverbundler = new ParcelBundler(['server/index.ts', 'server/server.urls'], {
     outDir: 'dist/server',
     watch,
     target: 'node',
     contentHash: true,
     sourceMaps: false,
-    bundleNodeModules: true,
     cache: false
-    
-  });
-
-  const server2bundler = new ParcelBundler(['server/index.ts'], {
-    outDir: 'dist/server',
-    watch,
-    target: 'node',
-    cache: false
-    
   });
 
   serverbundler.on('bundled', bundle =>
@@ -53,8 +44,7 @@ export async function build(watch: boolean = false) {
 
   await bundler.bundle();
   await serverbundler.bundle();
-  await server2bundler.bundle()
-  const webManifest = await buildManifest()
-  await writeJSON('dist/public/manifest.webmanifest', webManifest)
+  const webManifest = await buildManifest();
+  await writeJSON('dist/public/manifest.webmanifest', webManifest);
   await writeJSON('dist/CSS.json', CSS);
 }

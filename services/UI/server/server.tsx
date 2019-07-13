@@ -1,17 +1,26 @@
-// UI/UI/server.tsx
-import { Context } from 'koa';
+// UI/server/server.ts
 import React from 'react';
-import { ServerLocation } from '@reach/router';
 import { Capture, preloadAll } from 'react-loadable';
+import { ServerLocation, isRedirect } from '@reach/router';
 import { renderToNodeStream, renderToString } from 'react-dom/server';
 import { readJSON } from 'fs-extra';
-import { App } from 'ui/App';
+import { Context } from 'koa';
+import App from 'ui/App';
+import { PropProvider, PathPropsObject, Props, resetProps } from 'ui/Components/PropProvider';
+import { HeadProvider } from 'ui/Components/HeadProvider';
 
-export async function uiServer(ctx: Context) {
+export interface AppState {
+  PROPS: any;
+  SESSIONPROPS: PathPropsObject[];
+}
+
+export const uiServer = async (ctx: Context) => {
+  await preloadAll();
+  await resetProps();
   ctx.respond = false;
   ctx.status = 200;
   const manifestFile = `${__dirname}/../public/parcel-manifest.json`;
-  const cssFile = `dist/CSS.json`;
+  const cssFile = `${__dirname}/../CSS.json`;
   const [parcelManifest, cssManifest] = await Promise.all([
     readJSON(manifestFile) as Promise<{ [key: string]: string }>,
     readJSON(cssFile) as Promise<{ [any: string]: string }>,
@@ -23,17 +32,34 @@ export async function uiServer(ctx: Context) {
 
   const sources: Source[] = [{ type: 'script', src: parcelManifest['client.tsx'] }];
   let modules: string[] = [];
+  let sessionProps: PathPropsObject[] = [];
+  let localProps: any;
+  let head: JSX.Element[] = [];
+  let hashes: string[] = [];
 
-  await preloadAll();
+  try {
+    // Prerender to get Modules and shit
+    renderToString(
+      <ServerLocation url={ctx.url}>
+        <Capture report={moduleName => modules.push(moduleName)}>
+          <PropProvider ctx={ctx} sessionProps={sessionProps} props={{}}>
+            <HeadProvider tags={head} hashes={hashes}>
+              <App />
+            </HeadProvider>
+          </PropProvider>
+        </Capture>
+      </ServerLocation>,
+    );
+    localProps = await Props;
+  } catch (e) {
+    if (isRedirect(e)) {
+      ctx.redirect(e.uri);
+      ctx.res.end();
+      return;
+    }
 
-  // Prerender to get Modules and shit
-  renderToString(
-    <ServerLocation url={ctx.url}>
-      <Capture report={moduleName => modules.push(moduleName)}>
-        <App />
-      </Capture>
-    </ServerLocation>,
-  );
+    localProps = await Props;
+  }
 
   modules.map(moduleName =>
     Object.entries(parcelManifest)
@@ -41,9 +67,13 @@ export async function uiServer(ctx: Context) {
       .map(([modulePath, file]) => sources.unshift({ src: file, type: file.includes('.js') ? 'script' : 'style' })),
   );
 
-  const componentStream = renderToNodeStream(
+  let componentStream = renderToNodeStream(
     <ServerLocation url={ctx.url}>
-      <App />
+      <PropProvider ctx={ctx} sessionProps={sessionProps} props={localProps}>
+        <HeadProvider tags={head} hashes={hashes}>
+          <App />
+        </HeadProvider>
+      </PropProvider>
     </ServerLocation>,
   );
 
@@ -51,6 +81,7 @@ export async function uiServer(ctx: Context) {
     <head>
       <link rel='manifest' href='/manifest.webmanifest' />
       <meta name='viewport' content='width=device-width, initial-scale=1' />
+      {...head}
       {sources && sources.map(({ src, type }, index) => <link rel='preload' href={src} as={type} key={index} />)}
       {sources &&
         sources
@@ -73,6 +104,9 @@ export async function uiServer(ctx: Context) {
   );
 
   const htmlEnd = `</div>
+    <script>
+      window.APP_STATE = ${JSON.stringify({ SESSIONPROPS: sessionProps, PROPS: localProps })}
+    </script>
     ${renderToString(
       <>
         {' '}
@@ -91,4 +125,5 @@ export async function uiServer(ctx: Context) {
 
     ctx.res.end();
   });
-}
+  return;
+};
