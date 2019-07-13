@@ -30,7 +30,12 @@ export const uiServer = async (ctx: Context) => {
     type: 'script' | 'style';
   }
 
-  const sources: Source[] = [{ type: 'script', src: parcelManifest['client.tsx'] }];
+  const sources: Source[] = [
+    { type: 'script', src: parcelManifest['client.tsx'] },
+    { type: 'style', src: parcelManifest['App.css'] },
+    { type: 'style', src: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500'},
+    { type: 'style', src: 'https://fonts.googleapis.com/icon?family=Material+Icons' }
+  ];
   let modules: string[] = [];
   let sessionProps: PathPropsObject[] = [];
   let localProps: any;
@@ -94,7 +99,7 @@ export const uiServer = async (ctx: Context) => {
   <!doctype html>
     <html>
       ${Head}
-      <body>
+      <body class="mdc-typography">
       <div id="app">`;
 
   ctx.res.write(htmlStart);

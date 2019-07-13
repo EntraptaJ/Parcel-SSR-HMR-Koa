@@ -17,14 +17,23 @@
     "last 1 Chrome version"
   ],
   "dependencies": {
+    "@icons/material": "^0.4.1",
+    "@mdi/js": "^3.7.95",
+    "@mdi/react": "^1.2.1",
     "@reach/router": "^1.2.1",
+    "@rmwc/drawer": "^5.5.2",
+    "@rmwc/icon": "^5.5.2",
+    "@rmwc/list": "^5.5.2",
+    "@rmwc/top-app-bar": "^5.5.2",
     "fs-extra": "^8.1.0",
     "hash-it": "^4.0.4",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "material-design-icons": "^3.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-icons": "^3.7.0",
     "react-loadable": "^5.5.0",
     "ui": "^0.2.4"
   },
