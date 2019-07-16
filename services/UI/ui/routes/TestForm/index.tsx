@@ -21,7 +21,7 @@ const TestFormRoute: TestFormRouteType = () => {
   useTitle('Example Login Form Page');
 
   const onSubmit = (data: FormData) => {
-    console.log(`Username: ${data.username}\nPassword: ${data.password}`)
+    console.log(`Username: ${data.username}\nPassword: ${data.password}`);
   };
 
   return (

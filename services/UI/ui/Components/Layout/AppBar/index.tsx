@@ -9,7 +9,8 @@ import {
   TopAppBarFixedAdjust,
 } from '@rmwc/top-app-bar';
 // CSS
-import './AppBar.css'
+import './AppBar.css';
+import { Link } from '@reach/router';
 
 interface AppBarProps {
   appName: string;
@@ -24,11 +25,8 @@ const AppBar: AppBarType = ({ onNavClick, appName }) => {
       <TopAppBar fixed className='app__top-app-bar'>
         <TopAppBarRow>
           <TopAppBarSection alignStart>
-            <TopAppBarNavigationIcon
-              onClick={onNavClick}
-              icon='menu'
-            />
-            <TopAppBarTitle {...{ to: '/' }}>
+            <TopAppBarNavigationIcon onClick={onNavClick} icon='menu' />
+            <TopAppBarTitle tag={Link} {...{ to: '/' }}>
               {appName}
             </TopAppBarTitle>
           </TopAppBarSection>
@@ -39,4 +37,4 @@ const AppBar: AppBarType = ({ onNavClick, appName }) => {
   );
 };
 
-export default AppBar
+export default AppBar;

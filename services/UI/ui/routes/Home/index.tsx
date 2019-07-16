@@ -9,14 +9,12 @@ import { Typography } from '@rmwc/typography';
 type HomeRouteType = FunctionComponent<RouteComponentProps>;
 
 const HomeRoute: HomeRouteType = () => {
-  const { useProps, props } = useContext(PropContext);
+  const { useProps } = useContext(PropContext);
   useTitle('Home Page');
   useProps(async () => ({ title: 'Home' }));
   return (
     <div style={BoxStyle}>
-      <Typography use='headline4'>
-        Home Page
-      </Typography>
+      <Typography use='headline4'>Home Page</Typography>
       <Typography use='subtitle2' theme='textSecondaryOnBackground'>
         by KristianFJones
       </Typography>

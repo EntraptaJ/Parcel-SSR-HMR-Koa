@@ -1,5 +1,5 @@
 // UI/ui/App.tsx
-import React, { FunctionComponent, useState, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, useState, useMemo } from 'react';
 import { Routes } from 'ui/routes';
 import './App.css';
 import Loadable from 'react-loadable';
@@ -18,9 +18,7 @@ const Nav = Loadable({
   loading: Loading,
 });
 
-interface AppProps {}
-
-type AppType = FunctionComponent<AppProps>;
+type AppType = FunctionComponent;
 
 const App: AppType = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -33,6 +31,7 @@ const App: AppType = () => {
       <AppBar onNavClick={() => setMenuOpen(!menuOpen)} appName='Parcel' />
       <div className='main-content' style={{ display: 'flex', flex: '1 1', position: 'relative' }}>
         <Nav
+          closeNav={() => setMenuOpen(false)}
           navItems={AppRoutes}
           open={menuOpen}
           onClose={() => setMenuOpen(false)}

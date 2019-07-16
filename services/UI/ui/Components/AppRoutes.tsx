@@ -16,25 +16,39 @@ export const MyLoadable = (opts: any) =>
     ),
   );
 
-export interface ChildNavItem {
+export interface NavItem {
+  /**
+   * Label to use in the UI
+   */
   label: string;
+
+  /**
+   * Path for the router to use
+   */
   path: string;
+
+  /**
+   * Path for Links and Navigates to use
+   */
+  to: string;
+
+  /**
+   * Loadable Component for the Route
+   */
   Loadable:
     | ComponentClass<RouteComponentProps> & LoadableComponent
     | FunctionComponent<RouteComponentProps> & LoadableComponent;
-}
 
-interface ParentNavItem {
-  label: string;
-  path: string;
-  options: NavItem[];
+  /**
+   * Sub routes
+   */
+  children?: NavItem[];
 }
-
-export type NavItem = ChildNavItem | ParentNavItem;
 
 export const AppRoutes: NavItem[] = [
   {
     path: '/',
+    to: '/',
     label: 'Home',
     Loadable: MyLoadable({
       loader: () => import('ui/routes/Home'),
@@ -42,24 +56,38 @@ export const AppRoutes: NavItem[] = [
     }),
   },
   {
-    path: '/Example',
+    path: 'Example',
     label: 'Example',
+    to: '/Example',
     Loadable: MyLoadable({
       loader: () => import('ui/routes/Example'),
       modules: ['routes/Example/index.tsx'],
     }),
-  },
-  {
-    path: '/Redirect',
-    label: 'Redirect Example',
-    Loadable: MyLoadable({
-      loader: () => import('ui/routes/RedirectExample'),
-      modules: ['routes/RedirectExample/index.tsx'],
-    }),
+    children: [
+      {
+        path: 'Example1',
+        label: 'Example 1',
+        to: '/Example/Example1',
+        Loadable: MyLoadable({
+          loader: () => import('ui/routes/Example/Example1'),
+          modules: ['routes/Example/Example1/index.tsx'],
+        }),
+      },
+      {
+        path: 'Example2',
+        label: 'Example 2',
+        to: '/Example/Example2',
+        Loadable: MyLoadable({
+          loader: () => import('ui/routes/Example/Example2'),
+          modules: ['routes/Example/Example2/index.tsx'],
+        }),
+      },
+    ],
   },
   {
     path: '/TestForm',
     label: 'Test Form',
+    to: '/Redirect',
     Loadable: MyLoadable({
       loader: () => import('ui/routes/TestForm'),
       modules: ['routes/TestForm/index.tsx'],
