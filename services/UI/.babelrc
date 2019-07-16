@@ -1,17 +1,18 @@
 {
   "plugins": [
-    ["react-loadable/babel"]
+    ["module-resolver", {
+      "root": ["."],
+      "alias": {
+        "ui": "./ui",
+        "server": "./server"
+      }
+    }],
+    ["react-loadable/babel"],
+
   ],
   "env": {
     "server": {
       "plugins": [
-        ["module-resolver", {
-          "root": ["."],
-          "alias": {
-            "ui": "./ui",
-            "server": "./server"
-          }
-        }],
         ["react-loadable/babel"]
       ]
     }

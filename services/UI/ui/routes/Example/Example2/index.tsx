@@ -8,7 +8,7 @@ type ExampleRouteType = FunctionComponent;
 const ExampleRoute: ExampleRouteType = () => {
   return (
     <div style={BoxStyle}>
-      <Typography use='headline4'>Example Route Level 0</Typography>
+      <Typography use='headline4'>Example Route Level 1-2</Typography>
     </div>
   );
 };

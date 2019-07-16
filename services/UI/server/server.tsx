@@ -30,12 +30,17 @@ export const uiServer = async (ctx: Context) => {
     type: 'script' | 'style';
   }
 
-  const sources: Source[] = [{ type: 'script', src: parcelManifest['client.tsx'] }];
-  let modules: string[] = [];
+  const sources: Source[] = [
+    { type: 'script', src: parcelManifest['client.tsx'] },
+    { type: 'style', src: parcelManifest['App.css'] },
+    { type: 'style', src: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500' },
+    { type: 'style', src: 'https://fonts.googleapis.com/icon?family=Material+Icons' },
+  ];
+  const modules: string[] = [];
   let sessionProps: PathPropsObject[] = [];
   let localProps: any;
-  let head: JSX.Element[] = [];
-  let hashes: string[] = [];
+  const head: JSX.Element[] = [];
+  const hashes: string[] = [];
 
   try {
     // Prerender to get Modules and shit
@@ -50,7 +55,8 @@ export const uiServer = async (ctx: Context) => {
         </Capture>
       </ServerLocation>,
     );
-    localProps = await Props;
+    localProps = (await Props) || {};
+    sessionProps = [{ path: ctx.path, props: (await Props) || {} }];
   } catch (e) {
     if (isRedirect(e)) {
       ctx.redirect(e.uri);
@@ -58,7 +64,8 @@ export const uiServer = async (ctx: Context) => {
       return;
     }
 
-    localProps = await Props;
+    localProps = (await Props) || {};
+    sessionProps = [{ path: ctx.path, props: (await Props) || {} }];
   }
 
   modules.map(moduleName =>
@@ -67,7 +74,7 @@ export const uiServer = async (ctx: Context) => {
       .map(([modulePath, file]) => sources.unshift({ src: file, type: file.includes('.js') ? 'script' : 'style' })),
   );
 
-  let componentStream = renderToNodeStream(
+  const componentStream = renderToNodeStream(
     <ServerLocation url={ctx.url}>
       <PropProvider ctx={ctx} sessionProps={sessionProps} props={localProps}>
         <HeadProvider tags={head} hashes={hashes}>
@@ -94,7 +101,7 @@ export const uiServer = async (ctx: Context) => {
   <!doctype html>
     <html>
       ${Head}
-      <body>
+      <body class="mdc-typography">
       <div id="app">`;
 
   ctx.res.write(htmlStart);
@@ -104,9 +111,10 @@ export const uiServer = async (ctx: Context) => {
   );
 
   const htmlEnd = `</div>
-    <script>
-      window.APP_STATE = ${JSON.stringify({ SESSIONPROPS: sessionProps, PROPS: localProps })}
-    </script>
+    <script type="text/javascript">window.APP_STATE = ${JSON.stringify({
+      SESSIONPROPS: sessionProps,
+      PROPS: localProps,
+    })}</script>
     ${renderToString(
       <>
         {' '}
@@ -125,5 +133,4 @@ export const uiServer = async (ctx: Context) => {
 
     ctx.res.end();
   });
-  return;
 };

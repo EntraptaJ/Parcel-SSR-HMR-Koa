@@ -2,7 +2,6 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import serve from 'koa-static';
 import { readJSON } from 'fs-extra';
-import { preloadAll } from 'react-loadable';
 
 const port = 81;
 
