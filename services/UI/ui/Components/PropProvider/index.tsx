@@ -58,7 +58,6 @@ export const PropProvider = (prop: PropProviderProps) => {
 
     if (oldProps) setProps(oldProps.props || {});
     else {
-      await timeout(50);
       if (typeof (await Props) === 'undefined') return;
       sessionProps.push({ path: c.location.pathname, props: (await Props) || {} });
       setProps((await Props) || {});

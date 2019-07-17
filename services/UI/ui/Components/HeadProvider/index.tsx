@@ -2,6 +2,7 @@
 import React, { useContext, createContext, ReactNode } from 'react';
 import ReactDOM from 'react-dom/server';
 import sha256 from 'hash-it';
+import { globalHistory } from '@reach/router';
 
 interface ScriptTagParams {
   type: 'script';
@@ -49,14 +50,12 @@ interface ClearHeadParams {
 export const clearHead = (ids: string[]) =>
   ids.map(id => {
     const currentElement = document.querySelector<HTMLTitleElement>(`[data-id="${id}"]`);
-    if (currentElement) {
-      console.log('Removing', currentElement);
-      currentElement.remove();
-    }
+    if (currentElement) currentElement.remove();
   });
 
 export function HeadProvider(props: HeadProviderProps) {
   const { children, tags, hashes } = props;
+  globalHistory.listen(() => clearHead(hashes));
   return (
     <HeadContext.Provider
       value={{
@@ -65,7 +64,7 @@ export function HeadProvider(props: HeadProviderProps) {
         addTag: ({ ...params }) => {
           if (params.type === 'title') {
             const elem = <title>{params.text}</title>;
-            const id = sha256(JSON.stringify(elem));
+            const id = sha256(JSON.stringify(elem.props));
             const element = <title data-id={id}>{params.text}</title>;
             hashes.push(id);
             if (typeof window !== 'undefined') {
@@ -79,7 +78,7 @@ export function HeadProvider(props: HeadProviderProps) {
             }
           } else if (params.type === 'meta') {
             const elem = <meta name={params.name} content={params.content} />;
-            const id = sha256(JSON.stringify(elem));
+            const id = sha256(JSON.stringify(elem.props));
             const element = <meta data-id={id} name={params.name} content={params.content} />;
             hashes.push(id);
             if (typeof window !== 'undefined') {
@@ -93,7 +92,7 @@ export function HeadProvider(props: HeadProviderProps) {
             }
           } else if (params.type === 'script') {
             const elem = <script type={params.texttype} dangerouslySetInnerHTML={{ __html: params.script }} />;
-            const id = sha256(JSON.stringify(elem));
+            const id = sha256(JSON.stringify(elem.props));
             const element = <script data-id={id} type={params.texttype} dangerouslySetInnerHTML={{ __html: params.script }} />;
             hashes.push(id);
             if (typeof window !== 'undefined') {

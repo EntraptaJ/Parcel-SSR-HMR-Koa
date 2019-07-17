@@ -6,14 +6,14 @@ import { NavItem } from 'ui/Components/AppRoutes';
 import './Nav.css';
 import { Link } from '@reach/router';
 
-export const handleNavItems = (routes: NavItem[], closeNav: () => void): JSX.Element[] =>
+export const handleNavItems = (routes: NavItem[]): JSX.Element[] =>
   routes.map(route =>
     route.children ? (
       <CollapsibleList key={route.label} handle={<SimpleListItem text={route.label} metaIcon='chevron_right' />}>
-        {handleNavItems(route.children, closeNav)}
+        {handleNavItems(route.children)}
       </CollapsibleList>
     ) : (
-      <ListItem key={route.label} tag={Link} {...{ to: route.to }} onClick={closeNav}>
+      <ListItem key={route.label} tag={Link} {...{ to: route.to }}>
         {route.label}
       </ListItem>
     ),
@@ -21,13 +21,12 @@ export const handleNavItems = (routes: NavItem[], closeNav: () => void): JSX.Ele
 
 interface NavProps extends DrawerProps {
   navItems: NavItem[];
-  closeNav: () => void;
 }
 
 type NavType = FunctionComponent<NavProps>;
 
-const Nav: NavType = ({ navItems, closeNav, ...props }) => {
-  const NavItems = handleNavItems(navItems, closeNav);
+const Nav: NavType = ({ navItems, ...props }) => {
+  const NavItems = handleNavItems(navItems);
 
   return (
     <Drawer id='main-nav' {...props}>

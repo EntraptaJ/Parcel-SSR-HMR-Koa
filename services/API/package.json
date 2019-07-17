@@ -1,0 +1,63 @@
+{
+  "name": "ts-parcelssr-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon"
+  },
+  "author": "KristianFJones <me@kristianjones.xyz>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.0",
+    "@types/graphql": "^14.2.2",
+    "@types/node": "^12.6.5",
+    "@typescript-eslint/eslint-plugin": "^1.12.0",
+    "@typescript-eslint/parser": "^1.12.0",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "nodemon": "^1.19.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "apollo-server-koa": "^2.7.0",
+    "fs-extra": "^8.1.0",
+    "graphql": "^14.4.2",
+    "klaw": "^3.0.0",
+    "koa": "^2.7.0",
+    "p-event": "^4.1.0",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "extends": [
+      "standard",
+      "plugin:@typescript-eslint/recommended",
+      "prettier",
+      "prettier/standard",
+      "prettier/@typescript-eslint"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "parserOptions": {
+      "project": "tsconfig.json",
+      "tsconfigRootDir": "./services/API/"
+    },
+    "rules": {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-member-accessibility": "off"
+    }
+  }
+}

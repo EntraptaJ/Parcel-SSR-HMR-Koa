@@ -1,6 +1,7 @@
 // UI/server/server.ts
 import React from 'react';
 import { Capture, preloadAll } from 'react-loadable';
+import { ApolloProvider, getDataFromTree } from '@apollo/react-hooks';
 import { ServerLocation, isRedirect } from '@reach/router';
 import { renderToNodeStream, renderToString } from 'react-dom/server';
 import { readJSON } from 'fs-extra';
@@ -8,10 +9,14 @@ import { Context } from 'koa';
 import App from 'ui/App';
 import { PropProvider, PathPropsObject, Props, resetProps } from 'ui/Components/PropProvider';
 import { HeadProvider } from 'ui/Components/HeadProvider';
+import 'isomorphic-unfetch';
+import { initApollo } from 'ui/lib/initApollo';
+import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 
 export interface AppState {
   PROPS: any;
   SESSIONPROPS: PathPropsObject[];
+  APOLLO_STATE: NormalizedCacheObject;
 }
 
 export const uiServer = async (ctx: Context) => {
@@ -42,16 +47,20 @@ export const uiServer = async (ctx: Context) => {
   const head: JSX.Element[] = [];
   const hashes: string[] = [];
 
+  const client = initApollo({ baseUrl: 'http://localhost', token: ctx.cookies.get('token') });
+
   try {
     // Prerender to get Modules and shit
-    renderToString(
+    await getDataFromTree(
       <ServerLocation url={ctx.url}>
         <Capture report={moduleName => modules.push(moduleName)}>
-          <PropProvider ctx={ctx} sessionProps={sessionProps} props={{}}>
-            <HeadProvider tags={head} hashes={hashes}>
-              <App />
-            </HeadProvider>
-          </PropProvider>
+          <ApolloProvider client={client}>
+            <PropProvider ctx={ctx} sessionProps={sessionProps} props={{}}>
+              <HeadProvider tags={head} hashes={hashes}>
+                <App />
+              </HeadProvider>
+            </PropProvider>
+          </ApolloProvider>
         </Capture>
       </ServerLocation>,
     );
@@ -76,11 +85,13 @@ export const uiServer = async (ctx: Context) => {
 
   const componentStream = renderToNodeStream(
     <ServerLocation url={ctx.url}>
-      <PropProvider ctx={ctx} sessionProps={sessionProps} props={localProps}>
-        <HeadProvider tags={head} hashes={hashes}>
-          <App />
-        </HeadProvider>
-      </PropProvider>
+      <ApolloProvider client={client}>
+        <PropProvider ctx={ctx} sessionProps={sessionProps} props={localProps}>
+          <HeadProvider tags={head} hashes={hashes}>
+            <App />
+          </HeadProvider>
+        </PropProvider>
+      </ApolloProvider>
     </ServerLocation>,
   );
 
@@ -114,6 +125,7 @@ export const uiServer = async (ctx: Context) => {
     <script type="text/javascript">window.APP_STATE = ${JSON.stringify({
       SESSIONPROPS: sessionProps,
       PROPS: localProps,
+      APOLLO_STATE: client.cache.extract(),
     })}</script>
     ${renderToString(
       <>
